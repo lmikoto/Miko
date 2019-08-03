@@ -49,6 +49,7 @@
     }
   },
   "dependencies": {
+    "@types/lodash": "^4.14.136",
     "antd": "^3.20.7",
     "autoprefixer": "7.1.6",
     "babel-jest": "^22.1.0",

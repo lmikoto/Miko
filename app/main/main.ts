@@ -4,6 +4,7 @@ import url from 'url';
 import MainWindow from './windows/mainWindow';
 import { mainMenu } from './menu';
 import TrayCreator from './tray';
+import { eventListener, removeEventListeners } from './event';
 
 const isDev = process.env.NODE_ENV === 'development';
 const port = parseInt(process.env.PORT!, 10) || 3000;
@@ -37,8 +38,11 @@ class Electron {
       }
     });
     app.on('window-all-closed', () => {
+      removeEventListeners();
       app.quit();
     });
+
+    eventListener();
   }
 
   createMainWindow() {
@@ -47,11 +51,14 @@ class Electron {
   }
 
   installExtensions = async () => {
-    const { default: installer, REACT_DEVELOPER_TOOLS } = require('electron-devtools-installer');
+    const {
+      default: installer,
+      REACT_DEVELOPER_TOOLS
+    } = require('electron-devtools-installer');
 
     installer([REACT_DEVELOPER_TOOLS])
-    .then((name: string) => console.log(`Added Extension:  ${name}`))
-    .catch((err: Error) => console.log('An error occurred: ', err));
+      .then((name: string) => console.log(`Added Extension:  ${name}`))
+      .catch((err: Error) => console.log('An error occurred: ', err));
   }
 }
 
