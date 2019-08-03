@@ -1,6 +1,7 @@
 import * as React from 'react';
 import App from './containers/App';
 import './index.css';
+import 'antd/dist/antd.css';
 import registerServiceWorker from './registerServiceWorker';
 
 import dva from 'dva';

@@ -1,0 +1,11 @@
+.container{
+  height: 100%;
+  display: flex;
+  .floder-container{
+    width: 18%;
+  }
+  .editor-container{
+    flex: 1;
+    background-color: antiquewhite;
+  }
+}
