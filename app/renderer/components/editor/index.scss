@@ -1,0 +1,19 @@
+.cm-container{
+    height: 100%;
+    flex: 1;
+    .CodeMirror-gutters{
+        display: none;
+    }
+    .CodeMirror-wrap{
+        height: calc(100% - 80px);
+    }
+    .CodeMirror-sided{
+        float: left;
+    }
+    .editor-preview-active-side{
+        position: relative;
+        float: left;
+        height: calc(100% - 80px);
+        top: unset;
+    }
+}

@@ -11,9 +11,7 @@ class App extends Component {
           <div className="b" />
           <Floder />
         </div>
-        <div className="editor-container">
-          <Editor />
-        </div>
+        <Editor />
       </div>
     );
   }
