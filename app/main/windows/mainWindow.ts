@@ -12,15 +12,15 @@ export default class MainWindow {
       width: 800,
       show: false
     });
+    this.mainWindow.maximize();
   }
 
   loadURL(url: string) {
     this.mainWindow.loadURL(url);
-    // this.mainWindow.webContents.openDevTools();
   }
 
   openDevTools() {
-    this.mainWindow.webContents.openDevTools();
+    this.mainWindow.webContents.openDevTools({mode: 'bottom'});
   }
 
   show() {
