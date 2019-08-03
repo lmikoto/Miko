@@ -1,0 +1,27 @@
+osx_image: xcode8.3
+sudo: false
+language: c
+matrix:
+  include:
+    - os: osx
+cache:
+  directories:
+    - node_modules
+install:
+  - nvm install 8
+  - source ~/.bashrc
+  - npm install
+script:
+  - npm run release-mac
+branches:
+  only:
+    - master
+deploy:
+  provider: releases
+  api_key:
+    secure: pOggQS25ivao+CO9Q7bC/YJyObDbBG1lv1VLfwDGEn0cUAAUuEg07NE1CLykI81ANIls+xcFxWYjgSOcnn+VpId/7Z8KErDa2vs0MEkIVdeMacRWMzsBuxS31jsYeiZP5wgab4/PeE9tEAS1+H7I/QYT4hMcUU5FJzhDQmRfIsy+zaYooyq78PQQOhWKyBHZeKQPsc9gyrTPCJzCzxtyiZmRZvEwFC3IJcnkCgvkrJMqa2OVTQiD+Zcb2nHKn398cLXl8vTzV0PAX8GXQSjgWHFYPEu7/yewkuaG/pCru6iAGUxfU+dI+ethPXVVlxu/2Ntl/Moa1jTXgmKQbhCrdVYkYkSFcIEbx/5a8uaMJ3MwVxZW1O3ITUjehsiecnh2i1uPfL+hqDV0O6ApqGVgRxEb7lY9QzuQDGw0rJkAGPvQtLDCWkSUi6sZunrvOBe0uSz/wc7nC08VnPRa/TKOiyq2TTqVaiA/lvFwh7zQYLA+b9Z3NbwAL/XFF3E9UAaVml5U8g2IFeaxiJCBnMcpSVPdCh+SYZKNUQIFIQ3ZK3qqFJ1bVuf+i+Xiq36B6u2RuRh+NDLvDENB26DWC5mTJYtgwPXiz9PL+eJtZb1ZWUsamtGaOkX0NWremkTHvHXiHLDuskb1HcWTrNBB8g4F5bBfH48a7byoNJYV1n8v8f8=
+  file:
+    - dist/Miko_setup.dmg
+    - dist/Miko_setup.zip
+  on:
+    tags: true

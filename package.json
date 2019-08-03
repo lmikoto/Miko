@@ -1,14 +1,14 @@
 {
-  "name": "electron-typescript-react",
-  "version": "0.1.3",
+  "name": "miko",
+  "version": "1.0.0",
   "main": "./main.js",
   "repository": {
     "type": "git",
     "url": "http://github.com/Leskd/electron-react-typescript.git"
   },
   "author": {
-    "name": "name",
-    "email": ""
+    "name": "lmikoto",
+    "email": "lmikoto@outlook.com"
   },
   "keywords": [
     "electron",
@@ -36,9 +36,9 @@
     "test": "node scripts/test.js --env=jsdom --watchAll"
   },
   "build": {
-    "productName": "Electron-TypeScript-React",
+    "productName": "miko",
     "artifactName": "${productName}_setup.${ext}",
-    "appId": "com.example.app",
+    "appId": "top.lmikoto.miko",
     "files": [
       "build/",
       "main.js",
