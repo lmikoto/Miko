@@ -10,7 +10,7 @@ cache:
   directories:
     - node_modules
 before_install:
-    - sed -i 's/git@github.com:/https:\/\/github.com\//' .gitmodules
+    - sed -i '' 's/git@github.com:/https:\/\/github.com\//' .gitmodules
     - git submodule update --init --recursive
 install:
   - nvm install 8
