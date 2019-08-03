@@ -98,7 +98,8 @@ module.exports = {
       ".js",
       ".json",
       ".web.jsx",
-      ".jsx"
+      ".jsx",
+      ".scss"
     ],
     alias: {
       // Support React Native Web
