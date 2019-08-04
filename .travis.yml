@@ -18,9 +18,6 @@ install:
   - npm install
 script:
   - npm run release-mac
-branches:
-  only:
-    - master
 deploy:
   provider: releases
   api_key:
