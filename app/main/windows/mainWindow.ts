@@ -10,7 +10,10 @@ export default class MainWindow {
     this.mainWindow = new BrowserWindow({
       height: 600,
       width: 800,
-      show: false
+      show: false,
+      webPreferences: {
+        nodeIntegration: true
+      }
     });
     this.mainWindow.maximize();
   }

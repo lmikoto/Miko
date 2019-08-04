@@ -4,22 +4,23 @@ import { Tree } from 'antd';
 
 const { TreeNode, DirectoryTree } = Tree;
 import './index.scss';
-import { ipcRenderer } from 'electron';
 import commonTypes from '../../common/event-type';
 
 import { TreeData } from '../../common/interface';
 
 import { AntTreeNode } from 'antd/lib/tree';
 
+// @ts-ignore
+const { ipcRenderer } = window.require('electron');
+
 interface State {
   fileMode: 'MD' | 'FOLDER' | string;
   treeData: TreeData[];
 }
 class Floder extends React.PureComponent<any, State> {
-
   state = {
     fileMode: 'MD',
-    treeData: [],
+    treeData: []
   };
 
   onSelect = (keys: string[], event: any) => {
@@ -29,7 +30,6 @@ class Floder extends React.PureComponent<any, State> {
         ipcRenderer.send(commonTypes.READ_MD, key);
       }
     }
-
   }
 
   onExpand = () => {
@@ -44,10 +44,12 @@ class Floder extends React.PureComponent<any, State> {
   }
 
   initListenner = () => {
-
-    ipcRenderer.on(commonTypes.FILE_MODE_CHANGE, (_: any, { fileMode }: any) => {
-      this.setState({ fileMode });
-    });
+    ipcRenderer.on(
+      commonTypes.FILE_MODE_CHANGE,
+      (_: any, { fileMode }: any) => {
+        this.setState({ fileMode });
+      }
+    );
 
     ipcRenderer.on(commonTypes.PATH_READED, (_: any, { treeData }: any) => {
       this.setState({ treeData });
@@ -77,12 +79,13 @@ class Floder extends React.PureComponent<any, State> {
       if (treeNode.props.children) {
         resolve();
       }
-      const treeData = ipcRenderer.sendSync(commonTypes.READ_FOLDER, treeNode.props.eventKey);
-      treeNode.props.dataRef.children = [
-        ...treeData
-      ];
+      const treeData = ipcRenderer.sendSync(
+        commonTypes.READ_FOLDER,
+        treeNode.props.eventKey
+      );
+      treeNode.props.dataRef.children = [...treeData];
       this.setState({
-        treeData: [...this.state.treeData],
+        treeData: [...this.state.treeData]
       });
       resolve();
     });
@@ -91,18 +94,19 @@ class Floder extends React.PureComponent<any, State> {
   render() {
     const { fileMode, treeData } = this.state;
     return (
-      fileMode === 'FOLDER' &&
-      <div className="floder-container">
-        <DirectoryTree
-          multiple
-          defaultExpandAll
-          onSelect={this.onSelect}
-          onExpand={this.onExpand}
-          loadData={this.onLoadData as any}
-        >
-          {this.renderTreeNodes(treeData)}
-        </DirectoryTree>
-      </div>
+      fileMode === 'FOLDER' && (
+        <div className="floder-container">
+          <DirectoryTree
+            multiple
+            defaultExpandAll
+            onSelect={this.onSelect}
+            onExpand={this.onExpand}
+            loadData={this.onLoadData as any}
+          >
+            {this.renderTreeNodes(treeData)}
+          </DirectoryTree>
+        </div>
+      )
     );
   }
 }

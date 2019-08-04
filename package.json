@@ -19,7 +19,7 @@
   "bugs": {
     "url": "http://github.com/lmikoto/miko/issues"
   },
-  "homepage": "http://github.com/lmikoto/miko",
+  "homepage": ".",
   "license": "MIT",
   "scripts": {
     "start-renderer": "node scripts/start.js",

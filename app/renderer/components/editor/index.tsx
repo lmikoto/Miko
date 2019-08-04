@@ -3,10 +3,12 @@ import { CMLine } from './cm.type';
 import { blobToBase64 } from '../../utils';
 import uuid4 from 'uuid/v4';
 import './index.scss';
-import { ipcRenderer } from 'electron';
 import { debounce } from 'lodash';
 
 import commonTypes from '../../common/event-type';
+
+// @ts-ignore
+const { ipcRenderer } = window.require('electron');
 
 class Editor extends React.PureComponent {
   private editorRef: any;
@@ -18,7 +20,7 @@ class Editor extends React.PureComponent {
   componentDidMount() {
     this.sm = new SimpleMDE({
       element: this.editorRef,
-      spellChecker: false,
+      spellChecker: false
     });
     this.cm = this.sm.codemirror;
     this.initListenner();
@@ -97,7 +99,7 @@ class Editor extends React.PureComponent {
         }
       }
       if (item && item.kind === 'file' && item.type.match(/^image\//i)) {
-        const base64 = await blobToBase64(item.getAsFile()) as string;
+        const base64 = (await blobToBase64(item.getAsFile())) as string;
         const image = `![${uuid4()}](${base64})`;
         const start = {
           line: this.cm.getCursor().line,

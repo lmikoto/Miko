@@ -16,8 +16,11 @@ class File {
   }
 
   readContent(filePath: string) {
-    const data = fs.readFileSync(path.join(filePath));
-    return data.toString();
+    if (filePath) {
+      const data = fs.readFileSync(path.join(filePath));
+      return data.toString();
+    }
+    return '';
   }
 
   readFolder() {
