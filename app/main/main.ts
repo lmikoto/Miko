@@ -5,6 +5,7 @@ import MainWindow from './windows/mainWindow';
 import { mainMenu } from './menu';
 import TrayCreator from './tray';
 import { eventListener, removeEventListeners } from './event';
+import checkVersion from './version';
 
 const isDev = process.env.NODE_ENV === 'development';
 const port = parseInt(process.env.PORT!, 10) || 3000;
@@ -28,10 +29,13 @@ class Electron {
     app.on('ready', async () => {
       this.createMainWindow();
       this.mainWindowInstance.loadURL(indexUrl);
-      Menu.setApplicationMenu(mainMenu(this.mainWindowInstance.getBrowserWin()));
+      Menu.setApplicationMenu(
+        mainMenu(this.mainWindowInstance.getBrowserWin())
+      );
       const appIconPath = path.join(__dirname, './assets/electron.png');
       const tray = new TrayCreator(appIconPath);
       tray.initTray();
+      checkVersion();
       if (isDev) {
         this.mainWindowInstance.openDevTools();
         await this.installExtensions();
