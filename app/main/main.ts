@@ -32,10 +32,13 @@ class Electron {
       Menu.setApplicationMenu(
         mainMenu(this.mainWindowInstance.getBrowserWin())
       );
+
       const appIconPath = path.join(__dirname, './assets/electron.png');
       const tray = new TrayCreator(appIconPath);
       tray.initTray();
+      // 检查更新
       checkVersion();
+
       if (isDev) {
         this.mainWindowInstance.openDevTools();
         await this.installExtensions();

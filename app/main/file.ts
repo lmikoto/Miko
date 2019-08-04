@@ -1,22 +1,19 @@
-import { WebContents, BrowserWindow, dialog } from 'electron';
+import { BrowserWindow, dialog } from 'electron';
 
 import fs from 'fs';
 import path from 'path';
 
-import types from '../common/event-type';
+import types from '../renderer/common/event-type';
+import setting from './setting';
+import settingKeys from './setting/setting.key';
 
-export default class {
-  private win: WebContents;
-  constructor(win: BrowserWindow) {
-    this.win = win.webContents;
-  }
-
+class File {
   readContent(filePath: string) {
     const data = fs.readFileSync(path.join(filePath));
     return data.toString();
   }
 
-  readMD() {
+  readMD(win: BrowserWindow) {
     dialog.showOpenDialog(
       {
         properties: ['openFile'],
@@ -28,12 +25,31 @@ export default class {
       files => {
         if (files) {
           const filePath = files[0];
+          setting.update({ CURRENT_MD_PATH: filePath });
           const data = this.readContent(filePath);
-          this.win.send(types.READED, { data });
+          win.webContents.send(types.READED, { data });
         }
       }
     );
   }
 
   readPath() {}
+
+  saveMD(value: string) {
+    const mdPath = setting.get(settingKeys.CURRENT_MD_PATH);
+    if (mdPath) {
+      this.saveFile(mdPath, value);
+    }
+  }
+
+  saveFile = (filePate: string, value: string) => {
+    fs.writeFileSync(path.join(filePate), value);
+  }
+
+  openLastMD = () => {
+    const mdPath = setting.get(settingKeys.CURRENT_MD_PATH);
+    return  this.readContent(mdPath);
+  }
 }
+
+export default new File();

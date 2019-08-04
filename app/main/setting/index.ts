@@ -57,8 +57,8 @@ class FSDB {
     }
   }
 
-  getCache() {
-    return this.data;
+  get(key: string) {
+    return this.data[key];
   }
 }
 

@@ -1,6 +1,6 @@
 import { Menu, MenuItemConstructorOptions } from 'electron';
 import { BrowserWindow } from 'electron';
-import File from './file';
+import file from './file';
 
 function mainMenuTemplate(win: BrowserWindow): MenuItemConstructorOptions[] {
   return [
@@ -24,8 +24,7 @@ function mainMenuTemplate(win: BrowserWindow): MenuItemConstructorOptions[] {
           label: '打开markdown',
           role: 'openmarkdown',
           click: () => {
-            const file = new File(win);
-            file.readMD();
+            file.readMD(win);
           }
         }
       ]
