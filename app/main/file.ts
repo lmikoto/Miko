@@ -9,12 +9,18 @@ import settingKeys from './setting/setting.key';
 import { TreeData } from '../renderer/common/interface';
 
 class File {
+  private win: BrowserWindow;
+
+  initWin(win: BrowserWindow) {
+    this.win = win;
+  }
+
   readContent(filePath: string) {
     const data = fs.readFileSync(path.join(filePath));
     return data.toString();
   }
 
-  readFolder(win: BrowserWindow) {
+  readFolder() {
     dialog.showOpenDialog(
       {
         properties: ['openDirectory']
@@ -22,10 +28,12 @@ class File {
       files => {
         if (files) {
           setting.update({ [settingKeys.FILE_MODE]: 'FOLDER' });
-          win.webContents.send(types.FILE_MODE_CHANGE, { fileMode: 'FOLDER' });
+          this.win.webContents.send(types.FILE_MODE_CHANGE, {
+            fileMode: 'FOLDER'
+          });
           const rootPath = files[0];
           setting.update({ [settingKeys.CURRENT_ROOT_PATH]: rootPath });
-          win.webContents.send(types.PATH_READED, {
+          this.win.webContents.send(types.PATH_READED, {
             treeData: this.readOneFolder(rootPath)
           });
         }
@@ -33,7 +41,7 @@ class File {
     );
   }
 
-  readMD(win: BrowserWindow) {
+  readMD() {
     dialog.showOpenDialog(
       {
         properties: ['openFile'],
@@ -45,10 +53,8 @@ class File {
       files => {
         if (files) {
           const filePath = files[0];
-          setting.update({ [settingKeys.CURRENT_MD_PATH]: filePath });
-          win.webContents.send(types.FILE_MODE_CHANGE, { fileMode: 'MD' });
-          const data = this.readContent(filePath);
-          win.webContents.send(types.READED, { data });
+          this.readOneMD(filePath);
+          this.win.webContents.send(types.FILE_MODE_CHANGE, { fileMode: 'MD' });
         }
       }
     );
@@ -76,6 +82,14 @@ class File {
     return treeData;
   }
 
+  readOneMD = (mdPath: string) => {
+    if (this.isMD(mdPath)) {
+      const data = this.readContent(mdPath);
+      setting.update({ [settingKeys.CURRENT_MD_PATH]: mdPath });
+      this.win.webContents.send(types.READED, { data });
+    }
+  }
+
   saveMD(value: string) {
     const mdPath = setting.get(settingKeys.CURRENT_MD_PATH);
     if (mdPath) {
@@ -90,6 +104,11 @@ class File {
   openLastMD = () => {
     const mdPath = setting.get(settingKeys.CURRENT_MD_PATH);
     return this.readContent(mdPath);
+  }
+
+  openLastFolder = () => {
+    const mdPath = setting.get(settingKeys.CURRENT_ROOT_PATH);
+    return this.readOneFolder(mdPath);
   }
 
   isDir = (dirPath: string) => {

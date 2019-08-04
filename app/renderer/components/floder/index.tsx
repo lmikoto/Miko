@@ -21,8 +21,15 @@ class Floder extends React.PureComponent<any, State> {
     fileMode: 'MD',
     treeData: [],
   };
-  onSelect = (keys: any, event: any) => {
-    console.log('Trigger Select', keys, event);
+
+  onSelect = (keys: string[], event: any) => {
+    if (keys.length === 1) {
+      const key = keys[0];
+      if (key.endsWith('md') || key.endsWith('MD')) {
+        ipcRenderer.send(commonTypes.READ_MD, key);
+      }
+    }
+
   }
 
   onExpand = () => {
@@ -33,6 +40,7 @@ class Floder extends React.PureComponent<any, State> {
     const fileMode = ipcRenderer.sendSync(commonTypes.GET_FILE_MODE);
     this.setState({ fileMode });
     this.initListenner();
+    this.openLastFolder();
   }
 
   initListenner = () => {
@@ -44,6 +52,11 @@ class Floder extends React.PureComponent<any, State> {
     ipcRenderer.on(commonTypes.PATH_READED, (_: any, { treeData }: any) => {
       this.setState({ treeData });
     });
+  }
+
+  openLastFolder = () => {
+    const treeData = ipcRenderer.sendSync(commonTypes.OPEN_LAST_FOLDER);
+    this.setState({ treeData });
   }
 
   renderTreeNodes = (data: TreeData[]) =>

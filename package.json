@@ -70,6 +70,7 @@
     "history": "^4.7.2",
     "html-webpack-plugin": "2.29.0",
     "jest": "22.4.2",
+    "mz": "^2.7.0",
     "node-sass": "^4.12.0",
     "object-assign": "4.1.1",
     "postcss-flexbugs-fixes": "3.2.0",

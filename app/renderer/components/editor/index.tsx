@@ -26,7 +26,7 @@ class Editor extends React.PureComponent {
   }
 
   saveMD = () => {
-    ipcRenderer.send(commonTypes.SAVE_MD, this.sm.value());
+    ipcRenderer.sendSync(commonTypes.SAVE_MD, this.sm.value());
   }
 
   initListenner = () => {
