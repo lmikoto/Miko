@@ -1,10 +1,15 @@
 import fs from 'fs';
 import { Config } from './setting.type';
 import { app } from 'electron';
+import settingKes from './setting.key';
 
 const SPLIT = process.platform === 'win32' ? '\\' : '/';
 const DATA_PATH = app.getPath('appData');
 const SETTING_NAME = 'setting.json';
+
+const defaultSetting: Config = {
+  [settingKes.FILE_MODE]: 'MD'
+};
 
 class FSDB {
   private filePath: string = `${DATA_PATH}${SPLIT}${SETTING_NAME}`;
@@ -51,7 +56,7 @@ class FSDB {
       const content = fs.readFileSync(filePath, {
         encoding: 'utf8'
       });
-      this.data = JSON.parse(content);
+      this.data = { ...defaultSetting, ...JSON.parse(content) };
     } catch (ex) {
       console.warn(ex);
     }

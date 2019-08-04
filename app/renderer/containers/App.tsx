@@ -7,10 +7,9 @@ class App extends Component {
   render() {
     return (
       <div className="container">
-        <div className="floder-container">
-          <div className="b" />
-          <Floder />
-        </div>
+
+        <Floder />
+
         <Editor />
       </div>
     );

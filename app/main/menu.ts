@@ -19,7 +19,13 @@ function mainMenuTemplate(win: BrowserWindow): MenuItemConstructorOptions[] {
     {
       label: '文件',
       submenu: [
-        { label: '打开文件夹', role: 'openfile' },
+        {
+          label: '打开文件夹',
+          role: 'openfile',
+          click: () => {
+            file.readFolder(win);
+          }
+        },
         {
           label: '打开markdown',
           role: 'openmarkdown',

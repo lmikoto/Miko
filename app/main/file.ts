@@ -6,11 +6,31 @@ import path from 'path';
 import types from '../renderer/common/event-type';
 import setting from './setting';
 import settingKeys from './setting/setting.key';
+import { TreeData } from '../renderer/common/interface';
 
 class File {
   readContent(filePath: string) {
     const data = fs.readFileSync(path.join(filePath));
     return data.toString();
+  }
+
+  readFolder(win: BrowserWindow) {
+    dialog.showOpenDialog(
+      {
+        properties: ['openDirectory']
+      },
+      files => {
+        if (files) {
+          setting.update({ [settingKeys.FILE_MODE]: 'FOLDER' });
+          win.webContents.send(types.FILE_MODE_CHANGE, { fileMode: 'FOLDER' });
+          const rootPath = files[0];
+          setting.update({ [settingKeys.CURRENT_ROOT_PATH]: rootPath });
+          win.webContents.send(types.PATH_READED, {
+            treeData: this.readOneFolder(rootPath)
+          });
+        }
+      }
+    );
   }
 
   readMD(win: BrowserWindow) {
@@ -25,7 +45,8 @@ class File {
       files => {
         if (files) {
           const filePath = files[0];
-          setting.update({ CURRENT_MD_PATH: filePath });
+          setting.update({ [settingKeys.CURRENT_MD_PATH]: filePath });
+          win.webContents.send(types.FILE_MODE_CHANGE, { fileMode: 'MD' });
           const data = this.readContent(filePath);
           win.webContents.send(types.READED, { data });
         }
@@ -33,7 +54,27 @@ class File {
     );
   }
 
-  readPath() {}
+  readOneFolder = (rootPath: string) => {
+    const treeData: TreeData[] = [];
+
+    const list = fs.readdirSync(rootPath);
+
+    // tslint:disable-next-line:prefer-for-of
+    for (let i = 0; i < list.length; i++) {
+      const name = list[i];
+      if (this.isDir(path.join(rootPath, name))) {
+        treeData.push({ title: name, key: path.join(rootPath, name) });
+      } else if (this.isMD(path.join(rootPath, name))) {
+        treeData.push({
+          title: name,
+          key: path.join(rootPath, name),
+          isLeaf: true
+        });
+      }
+    }
+
+    return treeData;
+  }
 
   saveMD(value: string) {
     const mdPath = setting.get(settingKeys.CURRENT_MD_PATH);
@@ -48,7 +89,15 @@ class File {
 
   openLastMD = () => {
     const mdPath = setting.get(settingKeys.CURRENT_MD_PATH);
-    return  this.readContent(mdPath);
+    return this.readContent(mdPath);
+  }
+
+  isDir = (dirPath: string) => {
+    return fs.existsSync(dirPath) && fs.statSync(dirPath).isDirectory();
+  }
+
+  isMD = (filePath: string) => {
+    return filePath.endsWith('md') || filePath.endsWith('MD');
   }
 }
 
