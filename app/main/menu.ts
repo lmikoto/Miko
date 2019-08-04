@@ -11,6 +11,12 @@ const mainMenuTemplate: MenuItemConstructorOptions[]  = [
       { label: 'Copy', accelerator: 'CmdOrCtrl+C', role: 'copy' },
       { label: 'Paste', accelerator: 'CmdOrCtrl+V', role: 'paste' },
       { label: 'Select All', accelerator: 'CmdOrCtrl+A', role: 'selectall' },
+  ]},
+  {
+    label: '文件',
+    submenu: [
+      { label: '打开文件夹', role: 'openfile' },
+      { label: '打开markdown', role: 'openmarkdown' },
   ]}
 ];
 
