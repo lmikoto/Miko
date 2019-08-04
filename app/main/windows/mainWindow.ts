@@ -20,10 +20,14 @@ export default class MainWindow {
   }
 
   openDevTools() {
-    this.mainWindow.webContents.openDevTools({mode: 'bottom'});
+    this.mainWindow.webContents.openDevTools({ mode: 'bottom' });
   }
 
   show() {
     this.mainWindow.show();
+  }
+
+  getBrowserWin() {
+    return this.mainWindow;
   }
 }

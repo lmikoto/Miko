@@ -17,7 +17,7 @@
     "redux"
   ],
   "bugs": {
-    "url": "http://github.com/lmikoto/miko/issues"
+      "url": "http://github.com/lmikoto/miko/issues"
   },
   "homepage": "http://github.com/lmikoto/miko",
   "license": "MIT",
@@ -34,9 +34,9 @@
     "release-all": "npm run build && electron-builder --win --x64 && electron-builder --mac --x64",
     "postinstall": "electron-builder install-app-deps",
     "test": "node scripts/test.js --env=jsdom --watchAll",
-    "patch": "npm version patch",
-    "minor": "npm version minor",
-    "major": "npm version major"
+    "patch": "npm version patch && git push origin master && git push origin --tags",
+    "minor": "npm version minor && git push origin master && git push origin --tags",
+    "major": "npm version major && git push origin master && git push origin --tags"
   },
   "build": {
     "productName": "miko",

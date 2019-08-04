@@ -28,7 +28,7 @@ class Electron {
     app.on('ready', async () => {
       this.createMainWindow();
       this.mainWindowInstance.loadURL(indexUrl);
-      Menu.setApplicationMenu(mainMenu);
+      Menu.setApplicationMenu(mainMenu(this.mainWindowInstance.getBrowserWin()));
       const appIconPath = path.join(__dirname, './assets/electron.png');
       const tray = new TrayCreator(appIconPath);
       tray.initTray();

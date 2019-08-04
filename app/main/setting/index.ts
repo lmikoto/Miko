@@ -64,4 +64,4 @@ class FSDB {
 
 const setting = new FSDB();
 
-export { setting };
+export default setting;

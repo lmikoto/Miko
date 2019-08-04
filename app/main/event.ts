@@ -8,7 +8,8 @@ export function eventListener() {
 }
 
 export function removeEventListeners() {
-  forEach(types, type => {
+  const registed = [types.OPEN_MD];
+  forEach(registed, type => {
     ipcMain.removeAllListeners(type);
   });
 }
