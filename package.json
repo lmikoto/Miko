@@ -4,7 +4,7 @@
   "main": "./main.js",
   "repository": {
     "type": "git",
-    "url": "http://github.com/Leskd/electron-react-typescript.git"
+    "url": "http://github.com/lmikoto/miko.git"
   },
   "author": {
     "name": "lmikoto",
@@ -17,9 +17,9 @@
     "redux"
   ],
   "bugs": {
-    "url": "http://github.com/Leskd/electron-react-typescript/issues"
+    "url": "http://github.com/lmikoto/miko/issues"
   },
-  "homepage": "http://github.com/Leskd/electron-react-typescript",
+  "homepage": "http://github.com/lmikoto/miko",
   "license": "MIT",
   "scripts": {
     "start-renderer": "node scripts/start.js",
