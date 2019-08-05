@@ -5,7 +5,7 @@ import settingKes from './setting.key';
 
 const SPLIT = process.platform === 'win32' ? '\\' : '/';
 const DATA_PATH = app.getPath('appData');
-const SETTING_NAME = 'setting.json';
+const SETTING_NAME = `miko${SPLIT}setting.json`;
 
 const defaultSetting: Config = {
   [settingKes.FILE_MODE]: 'MD'
