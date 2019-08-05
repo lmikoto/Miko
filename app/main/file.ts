@@ -64,25 +64,29 @@ class File {
   }
 
   readOneFolder = (rootPath: string) => {
-    const treeData: TreeData[] = [];
+    if (rootPath) {
+      const treeData: TreeData[] = [];
 
-    const list = fs.readdirSync(rootPath);
+      const list = fs.readdirSync(rootPath);
 
-    // tslint:disable-next-line:prefer-for-of
-    for (let i = 0; i < list.length; i++) {
-      const name = list[i];
-      if (this.isDir(path.join(rootPath, name))) {
-        treeData.push({ title: name, key: path.join(rootPath, name) });
-      } else if (this.isMD(path.join(rootPath, name))) {
-        treeData.push({
-          title: name,
-          key: path.join(rootPath, name),
-          isLeaf: true
-        });
+      // tslint:disable-next-line:prefer-for-of
+      for (let i = 0; i < list.length; i++) {
+        const name = list[i];
+        if (this.isDir(path.join(rootPath, name))) {
+          treeData.push({ title: name, key: path.join(rootPath, name) });
+        } else if (this.isMD(path.join(rootPath, name))) {
+          treeData.push({
+            title: name,
+            key: path.join(rootPath, name),
+            isLeaf: true
+          });
+        }
       }
+
+      return treeData;
     }
 
-    return treeData;
+    return [];
   }
 
   readOneMD = (mdPath: string) => {
