@@ -37,6 +37,24 @@ export function eventListener() {
   ipcMain.on(types.READ_MD, (event: any, path: string) => {
     file.readOneMD(path);
   });
+
+  // 创建md
+  ipcMain.on(types.CREATE_MD, (event: any, path: string, name: string) => {
+    event.returnValue = file.createMD(path, name);
+  });
+
+  // 创建文件夹
+  ipcMain.on(types.CREATE_FOLDER, (event: any, path: string, name: string) => {
+    event.returnValue = file.createFolder(path, name);
+  });
+
+  // 创建重命名
+  ipcMain.on(
+    types.RENAME_FILE,
+    (event: any, path: string, odlname: string, newName: string) => {
+      event.returnValue = file.renameFile(path, odlname, newName);
+    }
+  );
 }
 
 export function removeEventListeners() {

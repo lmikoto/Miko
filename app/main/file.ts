@@ -7,6 +7,7 @@ import types from '../renderer/common/event-type';
 import setting from './setting';
 import settingKeys from './setting/setting.key';
 import { TreeData } from '../renderer/common/interface';
+import result from './result';
 
 class File {
   private win: BrowserWindow;
@@ -16,7 +17,7 @@ class File {
   }
 
   readContent(filePath: string) {
-    if (filePath) {
+    if (filePath && fs.existsSync(filePath)) {
       const data = fs.readFileSync(path.join(filePath));
       return data.toString();
     }
@@ -87,6 +88,45 @@ class File {
     }
 
     return [];
+  }
+
+  createMD = (mdPath: string, mdName: string) => {
+    if (mdPath) {
+      const newPath = path.join(mdPath, `${mdName}.md`);
+      if (fs.existsSync(newPath)) {
+        return result('文件已经存在');
+      }
+      fs.writeFileSync(newPath, '');
+      return result();
+    }
+    return result();
+  }
+
+  renameFile = (filePath: string, oldName: string, newName: string) => {
+    if (filePath) {
+      const oldPath = path.join(filePath);
+      let newPath;
+      if (this.isDir(oldName)) {
+        newPath = path.join(path.resolve(filePath, '..'), newName);
+      } else {
+        newPath = path.join(path.resolve(filePath, '..'), `${newName}.md`);
+      }
+      fs.renameSync(oldPath, newPath);
+      return result(null, path.resolve(newPath, '..'));
+    }
+    return result();
+  }
+
+  createFolder = (dirPath: string, name: string) => {
+    if (dirPath) {
+      const newPath = path.join(dirPath, name);
+      if (fs.existsSync(newPath)) {
+        return result('文件夹已经存在');
+      }
+      fs.mkdirSync(path.join(dirPath, name));
+      return result();
+    }
+    return result();
   }
 
   readOneMD = (mdPath: string) => {

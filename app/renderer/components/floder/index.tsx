@@ -1,14 +1,27 @@
-import React from 'react';
+import React, { Fragment } from 'react';
 
-import { Tree } from 'antd';
+import { Tree, Modal, Input, message } from 'antd';
 
 const { TreeNode, DirectoryTree } = Tree;
 import './index.scss';
 import commonTypes from '../../common/event-type';
 
-import { TreeData } from '../../common/interface';
+import {
+  TreeData,
+  RightClickNodeTreeItem,
+  Result
+} from '../../common/interface';
 
 import { AntTreeNode } from 'antd/lib/tree';
+
+import {
+  Menu,
+  Item,
+  Submenu,
+  MenuProvider,
+  contextMenu
+} from 'react-contexify';
+import 'react-contexify/dist/ReactContexify.min.css';
 
 // @ts-ignore
 const { ipcRenderer } = window.require('electron');
@@ -16,24 +29,38 @@ const { ipcRenderer } = window.require('electron');
 interface State {
   fileMode: 'MD' | 'FOLDER' | string;
   treeData: TreeData[];
+  rightClickNodeTreeItem: RightClickNodeTreeItem;
+  currentNode: AntTreeNode;
+  modalvisible: boolean;
+  editType: string;
+  editName: string;
 }
 class Floder extends React.PureComponent<any, State> {
   state = {
     fileMode: 'MD',
-    treeData: []
+    treeData: [],
+    rightClickNodeTreeItem: {} as RightClickNodeTreeItem,
+    currentNode: {} as AntTreeNode,
+    modalvisible: false,
+    editType: '',
+    editName: ''
   };
 
   onSelect = (keys: string[], event: any) => {
     if (keys.length === 1) {
       const key = keys[0];
-      if (key.endsWith('md') || key.endsWith('MD')) {
+      if (this.isMd(key)) {
         ipcRenderer.send(commonTypes.READ_MD, key);
       }
     }
   }
 
+  isMd = (title: string) => {
+    return title && (title.endsWith('md') || title.endsWith('MD'));
+  }
+
   onExpand = () => {
-    console.log('Trigger Expand');
+    // console.log('Trigger Expand');
   }
 
   componentDidMount() {
@@ -70,13 +97,15 @@ class Floder extends React.PureComponent<any, State> {
           </TreeNode>
         );
       }
-      return <TreeNode {...item} dataRef={item} key={item.key} />;
+      return (
+        <TreeNode {...item} title={item.title} dataRef={item} key={item.key} />
+      );
     })
 
   onLoadData = (treeNode: AntTreeNode) => {
     return new Promise(resolve => {
       // 已经加载过了
-      if (treeNode.props.children) {
+      if (this.isMd(treeNode.props.title as string)) {
         resolve();
       }
       const treeData = ipcRenderer.sendSync(
@@ -91,12 +120,105 @@ class Floder extends React.PureComponent<any, State> {
     });
   }
 
+  rightMenu = () => {
+    const { currentNode = {} as any } = this.state;
+    const { props = {} } = currentNode;
+    const { dataRef = {} } = props;
+    const { title } = dataRef;
+    return (
+      <Menu id="right-menu">
+        {!this.isMd(title) && (
+          <Submenu label="新建">
+            <Item onClick={() => this.handleEdit(commonTypes.CREATE_MD)}>
+              MD文件
+            </Item>
+            <Item onClick={() => this.handleEdit(commonTypes.CREATE_FOLDER)}>
+              文件夹
+            </Item>
+          </Submenu>
+        )}
+        {/* <Item onClick={() => this.handleEdit(commonTypes.RENAME_FILE)}>
+          重命名
+        </Item> */}
+      </Menu>
+    );
+  }
+
+  title = (fileName: string) => {
+    return (
+      <Fragment>
+        <MenuProvider id="right-menu" style={{ display: 'inline-block' }}>
+          {fileName}
+        </MenuProvider>
+      </Fragment>
+    );
+  }
+
+  onContextMenu = (e: any) => {
+    contextMenu.show({
+      id: 'right-menu',
+      event: e
+    });
+  }
+
+  onRightClick = (e: any) => {
+    const currentNode = e.node;
+    this.setState({ currentNode });
+  }
+
+  handleEdit = (editType: string) => {
+    this.setState({ modalvisible: true, editType });
+  }
+
+  editOk = () => {
+    const { currentNode, editName, editType } = this.state;
+    const { key, title } = currentNode.props.dataRef;
+    let result: Result;
+    switch (editType) {
+      case commonTypes.CREATE_FOLDER:
+      case commonTypes.CREATE_MD:
+        result = ipcRenderer.sendSync(editType, key, editName);
+        break;
+      case commonTypes.RENAME_FILE:
+        result = ipcRenderer.sendSync(editType, key, title, editName);
+        break;
+      default:
+        result = {};
+        break;
+    }
+    if (result.errMsg) {
+      message.error(result.errMsg);
+    }
+
+    const updatePath = result.data || key;
+    const treeData = ipcRenderer.sendSync(commonTypes.READ_FOLDER, updatePath);
+    switch (editType) {
+      case commonTypes.CREATE_FOLDER:
+      case commonTypes.CREATE_MD:
+        currentNode.props.dataRef.children = [...treeData];
+        this.setState({
+          treeData: [...this.state.treeData],
+          editName: '',
+          modalvisible: false,
+          editType: ''
+        });
+        break;
+      case commonTypes.RENAME_FILE:
+        // result = ipcRenderer.sendSync(editType, key, title, editName);
+        break;
+      default:
+        result = {};
+        break;
+    }
+  }
+
   render() {
-    const { fileMode, treeData } = this.state;
+    const { fileMode, treeData, modalvisible, editName, editType } = this.state;
     return (
       fileMode === 'FOLDER' && (
-        <div className="floder-container">
+        <div className="floder-container" onContextMenu={this.onContextMenu}>
           <DirectoryTree
+            onRightClick={this.onRightClick}
             multiple
             defaultExpandAll
             onSelect={this.onSelect}
@@ -105,6 +227,24 @@ class Floder extends React.PureComponent<any, State> {
           >
             {this.renderTreeNodes(treeData)}
           </DirectoryTree>
+          {this.rightMenu()}
+          <Modal
+            visible={modalvisible}
+            onCancel={() => this.setState({ modalvisible: false })}
+            title={editType}
+            onOk={this.editOk}
+          >
+            <Input
+              value={editName}
+              ref={ref => {
+                if (ref) {
+                  ref.input.focus();
+                }
+              }}
+              onPressEnter={this.editOk}
+              onChange={e => this.setState({ editName: e.target.value })}
+            />
+          </Modal>
         </div>
       )
     );
