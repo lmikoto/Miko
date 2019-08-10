@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta http-equiv="X-UA-Compatible" content="ie=edge" />
+    <title>Miko</title>
+
+    <link rel="stylesheet" href="./reveal.js/css/reveal.css" />
+    <link rel="stylesheet" href="./reveal.js/css/theme/white.css" id="theme" />
+
+    <link rel="stylesheet" href="./reveal.js/lib/css/monokai.css" />
+
+    <script src="./reveal.js/js/reveal.js"></script>
+
+    <script>
+      const { ipcRenderer } = require("electron");
+      window.onload = function() {
+        ipcRenderer.on("reveal-md-readed", (_, content) => {
+          document.querySelector(".slides").innerHTML = content;
+          setTimeout(function() {
+            Reveal.initialize({
+              controls: true,
+              progress: true,
+              history: true,
+              center: true,
+              // Optional libraries used to extend on reveal.js
+              dependencies: [
+                {
+                  src: "reveal.js/plugin/markdown/marked.js",
+                  condition: function() {
+                    return !!document.querySelector("[data-markdown]");
+                  }
+                },
+                {
+                  src: "reveal.js/plugin/markdown/markdown.js",
+                  async: true,
+                  condition: function() {
+                    return !!document.querySelector("[data-markdown]");
+                  }
+                },
+                {
+                  src: "reveal.js/plugin/highlight/highlight.js",
+                  callback: function() {
+                    hljs.initHighlightingOnLoad();
+                  }
+                },
+                { src: "reveal.js/plugin/notes/notes.js" }
+              ]
+            });
+          }, 10);
+        });
+        ipcRenderer.send("reveal-ready");
+      };
+    </script>
+  </head>
+  <body>
+    <div class="reveal">
+      <div class="slides"></div>
+    </div>
+  </body>
+</html>

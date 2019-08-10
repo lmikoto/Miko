@@ -1,3 +1,6 @@
 [submodule "editor"]
 	path = editor
 	url = git@github.com:lmikoto/miko-editor.git
+[submodule "reveal.js"]
+	path = reveal.js
+	url = git@github.com:lmikoto/reveal.js.git

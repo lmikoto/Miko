@@ -3,6 +3,8 @@ const fs = require("fs");
 const path = require("path");
 const exec = require("child_process").exec;
 
+const child_process = require("child_process");
+
 // const editor
 
 const editorSrc = path.resolve(__dirname, "../editor/dist");
@@ -19,3 +21,9 @@ for (let i = 0; i < editorList.length; i++) {
     path.resolve(editorTarget, editorList[i])
   );
 }
+
+// reveal
+
+const revealSrc = path.resolve(__dirname, "../reveal.js");
+const revealTarget = path.resolve(__dirname, "../public/reveal.js");
+child_process.spawn("cp", ["-r", revealSrc, revealTarget]);

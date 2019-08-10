@@ -5,6 +5,7 @@ import types from '../renderer/common/event-type';
 import file from './file';
 import setting from './setting';
 import settingKey from './setting/setting.key';
+import realWindow from './windows/revealWindow';
 
 export function eventListener() {
   // 保存md
@@ -50,14 +51,17 @@ export function eventListener() {
       event.returnValue = file.renameFile(path, odlname, newName);
     }
   );
+
+  // 作为ppt
+  ipcMain.on(types.OPEN_REVEAL, (event: any, path: string) => {
+    realWindow.createMainWindow();
+    const mdContent = file.readContent(path);
+    realWindow.showPPTPre(mdContent);
+  });
 }
 
 export function removeEventListeners() {
-  const registed = [
-    types.SAVE_MD,
-    types.OPEN_LAST_MD,
-    types.GET_FILE_MODE,
-  ];
+  const registed = [types.SAVE_MD, types.OPEN_LAST_MD, types.GET_FILE_MODE];
   forEach(registed, type => {
     ipcMain.removeAllListeners(type);
   });

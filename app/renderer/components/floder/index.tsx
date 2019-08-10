@@ -85,7 +85,6 @@ class Floder extends React.PureComponent<any, State> {
 
   openLastFolder = () => {
     const treeData = ipcRenderer.sendSync(commonTypes.OPEN_LAST_FOLDER);
-    console.log(treeData);
     this.setState({ treeData });
   }
 
@@ -123,8 +122,14 @@ class Floder extends React.PureComponent<any, State> {
         <Item onClick={() => this.handleEdit(commonTypes.RENAME_FILE)}>
           重命名
         </Item>
+        {!isDir && <Item onClick={this.openReveal}>作为ppt打开</Item>}
       </Menu>
     );
+  }
+
+  openReveal = () => {
+    const { currentNode } = this.state;
+    ipcRenderer.send(commonTypes.OPEN_REVEAL, currentNode.props.dataRef.key);
   }
 
   title = (fileName: string) => {
@@ -155,7 +160,7 @@ class Floder extends React.PureComponent<any, State> {
       this.setState({
         modalvisible: true,
         editType,
-        editName: currentNode.props.dataRef.title
+        editName: currentNode.props.dataRef.title.split('.')[0]
       });
     } else {
       this.setState({ modalvisible: true, editType });
@@ -205,7 +210,9 @@ class Floder extends React.PureComponent<any, State> {
           {this.rightMenu()}
           <Modal
             visible={modalvisible}
-            onCancel={() => this.setState({ modalvisible: false })}
+            onCancel={() =>
+              this.setState({ modalvisible: false, editName: '' })
+            }
             title={editType}
             onOk={this.editOk}
           >

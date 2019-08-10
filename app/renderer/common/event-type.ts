@@ -10,5 +10,7 @@ export default {
   CREATE_MD: '新建MD',
   CREATE_FOLDER: '新建文件夹',
   RENAME_FILE: '重命名',
-  RENAME_FOLDER: '重命名文件夹'
+  RENAME_FOLDER: '重命名文件夹',
+  OPEN_REVEAL: 'as-ppt-open',
+  REVEAL_MD_READED: 'reveal-md-readed',
 };
