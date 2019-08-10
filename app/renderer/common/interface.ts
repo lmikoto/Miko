@@ -4,6 +4,7 @@ export interface TreeData {
   isLeaf?: boolean;
   children?: TreeData[];
   isEdit?: boolean;
+  isDir?: boolean;
 }
 
 export interface RightClickNodeTreeItem {

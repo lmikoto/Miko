@@ -66,7 +66,8 @@ class File {
 
   readOneFolder = (rootPath: string) => {
     if (rootPath) {
-      const treeData: TreeData[] = [];
+      const dir: TreeData[] = [];
+      const md: TreeData[] = [];
 
       const list = fs.readdirSync(rootPath);
 
@@ -74,9 +75,13 @@ class File {
       for (let i = 0; i < list.length; i++) {
         const name = list[i];
         if (this.isDir(path.join(rootPath, name))) {
-          treeData.push({ title: name, key: path.join(rootPath, name) });
+          dir.push({
+            title: name,
+            key: path.join(rootPath, name),
+            isDir: true
+          });
         } else if (this.isMD(path.join(rootPath, name))) {
-          treeData.push({
+          md.push({
             title: name,
             key: path.join(rootPath, name),
             isLeaf: true
@@ -84,7 +89,7 @@ class File {
         }
       }
 
-      return treeData;
+      return [...dir, ...md];
     }
 
     return [];
@@ -163,7 +168,12 @@ class File {
   }
 
   isMD = (filePath: string) => {
-    return filePath.endsWith('md') || filePath.endsWith('MD');
+    return (
+      (fs.existsSync(filePath) &&
+        !fs.statSync(filePath).isDirectory() &&
+        filePath.endsWith('md')) ||
+      filePath.endsWith('MD')
+    );
   }
 }
 
