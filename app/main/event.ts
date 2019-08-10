@@ -28,11 +28,6 @@ export function eventListener() {
     event.returnValue = setting.get(settingKey.FILE_MODE);
   });
 
-  // 读单层文件夹
-  ipcMain.on(types.READ_FOLDER, (event: any, path: string) => {
-    event.returnValue = file.readOneFolder(path);
-  });
-
   // 打开md
   ipcMain.on(types.READ_MD, (event: any, path: string) => {
     file.readOneMD(path);
@@ -62,7 +57,6 @@ export function removeEventListeners() {
     types.SAVE_MD,
     types.OPEN_LAST_MD,
     types.GET_FILE_MODE,
-    types.READ_FOLDER
   ];
   forEach(registed, type => {
     ipcMain.removeAllListeners(type);

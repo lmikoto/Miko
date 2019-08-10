@@ -85,6 +85,7 @@ class Floder extends React.PureComponent<any, State> {
 
   openLastFolder = () => {
     const treeData = ipcRenderer.sendSync(commonTypes.OPEN_LAST_FOLDER);
+    console.log(treeData);
     this.setState({ treeData });
   }
 
@@ -102,32 +103,14 @@ class Floder extends React.PureComponent<any, State> {
       );
     })
 
-  onLoadData = (treeNode: AntTreeNode) => {
-    return new Promise(resolve => {
-      // 已经加载过了
-      if (this.isMd(treeNode.props.title as string)) {
-        resolve();
-      }
-      const treeData = ipcRenderer.sendSync(
-        commonTypes.READ_FOLDER,
-        treeNode.props.eventKey
-      );
-      treeNode.props.dataRef.children = [...treeData];
-      this.setState({
-        treeData: [...this.state.treeData]
-      });
-      resolve();
-    });
-  }
-
   rightMenu = () => {
     const { currentNode = {} as any } = this.state;
     const { props = {} } = currentNode;
     const { dataRef = {} } = props;
-    const { title } = dataRef;
+    const { isDir } = dataRef;
     return (
       <Menu id="right-menu">
-        {!this.isMd(title) && (
+        {isDir && (
           <Submenu label="新建">
             <Item onClick={() => this.handleEdit(commonTypes.CREATE_MD)}>
               MD文件
@@ -137,9 +120,9 @@ class Floder extends React.PureComponent<any, State> {
             </Item>
           </Submenu>
         )}
-        {/* <Item onClick={() => this.handleEdit(commonTypes.RENAME_FILE)}>
+        <Item onClick={() => this.handleEdit(commonTypes.RENAME_FILE)}>
           重命名
-        </Item> */}
+        </Item>
       </Menu>
     );
   }
@@ -167,7 +150,16 @@ class Floder extends React.PureComponent<any, State> {
   }
 
   handleEdit = (editType: string) => {
-    this.setState({ modalvisible: true, editType });
+    if (editType === commonTypes.RENAME_FILE) {
+      const { currentNode } = this.state;
+      this.setState({
+        modalvisible: true,
+        editType,
+        editName: currentNode.props.dataRef.title
+      });
+    } else {
+      this.setState({ modalvisible: true, editType });
+    }
   }
 
   editOk = () => {
@@ -190,26 +182,10 @@ class Floder extends React.PureComponent<any, State> {
       message.error(result.errMsg);
     }
 
-    const updatePath = result.data || key;
-    const treeData = ipcRenderer.sendSync(commonTypes.READ_FOLDER, updatePath);
-    switch (editType) {
-      case commonTypes.CREATE_FOLDER:
-      case commonTypes.CREATE_MD:
-        currentNode.props.dataRef.children = [...treeData];
-        this.setState({
-          treeData: [...this.state.treeData],
-          editName: '',
-          modalvisible: false,
-          editType: ''
-        });
-        break;
-      case commonTypes.RENAME_FILE:
-        // result = ipcRenderer.sendSync(editType, key, title, editName);
-        break;
-      default:
-        result = {};
-        break;
-    }
+    this.setState({ modalvisible: false, editName: '' });
+
+    // 刷新文件夹
+    this.openLastFolder();
   }
 
   render() {
@@ -220,10 +196,9 @@ class Floder extends React.PureComponent<any, State> {
           <DirectoryTree
             onRightClick={this.onRightClick}
             multiple
-            defaultExpandAll
+            // defaultExpandAll
             onSelect={this.onSelect}
             onExpand={this.onExpand}
-            loadData={this.onLoadData as any}
           >
             {this.renderTreeNodes(treeData)}
           </DirectoryTree>

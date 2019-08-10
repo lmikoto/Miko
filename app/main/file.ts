@@ -38,7 +38,7 @@ class File {
           const rootPath = files[0];
           setting.update({ [settingKeys.CURRENT_ROOT_PATH]: rootPath });
           this.win.webContents.send(types.PATH_READED, {
-            treeData: this.readOneFolder(rootPath)
+            treeData: this.readAllFolder(rootPath)
           });
         }
       }
@@ -64,13 +64,11 @@ class File {
     );
   }
 
-  readOneFolder = (rootPath: string) => {
-    if (rootPath) {
+  readAllFolder = (rootPath: string) => {
+    if (rootPath && fs.existsSync(rootPath)) {
       const dir: TreeData[] = [];
       const md: TreeData[] = [];
-
       const list = fs.readdirSync(rootPath);
-
       // tslint:disable-next-line:prefer-for-of
       for (let i = 0; i < list.length; i++) {
         const name = list[i];
@@ -78,7 +76,8 @@ class File {
           dir.push({
             title: name,
             key: path.join(rootPath, name),
-            isDir: true
+            isDir: true,
+            children: this.readAllFolder(path.join(rootPath, name))
           });
         } else if (this.isMD(path.join(rootPath, name))) {
           md.push({
@@ -88,10 +87,8 @@ class File {
           });
         }
       }
-
       return [...dir, ...md];
     }
-
     return [];
   }
 
@@ -111,7 +108,7 @@ class File {
     if (filePath) {
       const oldPath = path.join(filePath);
       let newPath;
-      if (this.isDir(oldName)) {
+      if (this.isDir(filePath)) {
         newPath = path.join(path.resolve(filePath, '..'), newName);
       } else {
         newPath = path.join(path.resolve(filePath, '..'), `${newName}.md`);
@@ -159,8 +156,8 @@ class File {
   }
 
   openLastFolder = () => {
-    const mdPath = setting.get(settingKeys.CURRENT_ROOT_PATH);
-    return this.readOneFolder(mdPath);
+    const rootPath = setting.get(settingKeys.CURRENT_ROOT_PATH);
+    return this.readAllFolder(rootPath);
   }
 
   isDir = (dirPath: string) => {
