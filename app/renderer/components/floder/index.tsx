@@ -1,4 +1,4 @@
-import React, { Fragment } from 'react';
+import React from 'react';
 
 import { Tree, Modal, Input, message } from 'antd';
 
@@ -14,13 +14,7 @@ import {
 
 import { AntTreeNode } from 'antd/lib/tree';
 
-import {
-  Menu,
-  Item,
-  Submenu,
-  MenuProvider,
-  contextMenu
-} from 'react-contexify';
+import { Menu, Item, Submenu, contextMenu } from 'react-contexify';
 import 'react-contexify/dist/ReactContexify.min.css';
 
 // @ts-ignore
@@ -123,6 +117,7 @@ class Floder extends React.PureComponent<any, State> {
           重命名
         </Item>
         {!isDir && <Item onClick={this.openReveal}>作为ppt打开</Item>}
+        {/* {!isDir && <Item onClick={this.openReveal}>复制到剪切板</Item>} */}
       </Menu>
     );
   }
@@ -132,21 +127,14 @@ class Floder extends React.PureComponent<any, State> {
     ipcRenderer.send(commonTypes.OPEN_REVEAL, currentNode.props.dataRef.key);
   }
 
-  title = (fileName: string) => {
-    return (
-      <Fragment>
-        <MenuProvider id="right-menu" style={{ display: 'inline-block' }}>
-          {fileName}
-        </MenuProvider>
-      </Fragment>
-    );
-  }
-
   onContextMenu = (e: any) => {
-    contextMenu.show({
-      id: 'right-menu',
-      event: e
-    });
+    // 右击空白处
+    if (typeof e._dispatchListeners !== 'function') {
+      contextMenu.show({
+        id: 'right-menu',
+        event: e
+      });
+    }
   }
 
   onRightClick = (e: any) => {
@@ -201,7 +189,6 @@ class Floder extends React.PureComponent<any, State> {
           <DirectoryTree
             onRightClick={this.onRightClick}
             multiple
-            // defaultExpandAll
             onSelect={this.onSelect}
             onExpand={this.onExpand}
           >
